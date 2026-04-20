@@ -28,6 +28,10 @@ body{font-family:-apple-system,system-ui,'Noto Sans TC',sans-serif;background:va
 .hero-card img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
 .hero-card .hc-lb{position:absolute;bottom:0;left:0;right:0;padding:6px 8px;background:linear-gradient(transparent,rgba(0,0,0,.75));font-size:.62rem;color:rgba(255,255,255,.85);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hero-count{position:absolute;bottom:6px;right:8px;font-size:.58rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:3px}
+.goal{padding:12px;text-align:center}
+.goal-img{width:100%;max-width:320px;border-radius:16px;object-fit:cover;margin:0 auto 14px;display:block;box-shadow:0 4px 24px rgba(108,99,255,.25)}
+.goal-label{font-size:.85rem;font-weight:700;color:var(--ac);margin-bottom:4px}
+.goal-sub{font-size:.7rem;color:var(--t2)}
 .rest{text-align:center;padding:80px 20px;color:var(--t2)}
 .rest span{font-size:2.8rem;display:block;margin-bottom:8px}
 .rest p{font-size:.9rem}
@@ -79,6 +83,7 @@ const IM={'db bench press':'Dumbbell_Bench_Press','one-arm db row':'One-Arm_Dumb
 function imgUrl(n,i){const f=IM[n.toLowerCase()];return f?IB+f+'/'+i+'.jpg':'';}
 
 const D=[
+  {id:0,lb:'\ud83c\udfaf',goal:true},
   {id:1,lb:'\u4e0a\u80a2',ex:[
     {n:'DB Bench Press',m:'\u80f8\u00b7\u4e09\u89d2\u00b7\u4e09\u982d',s:4,r:'6-8'},
     {n:'One-Arm DB Row',m:'\u80cc\u95ca\u00b7\u83f1\u5f62',s:4,r:'8-10'},
@@ -146,6 +151,10 @@ function render(){
   const pg=$('page');pg.innerHTML='';
   const dd=D.find(x=>x.id===day);
   if(!dd)return;
+  if(dd.goal){
+    pg.innerHTML='<div class="goal"><img class="goal-img" src="goal.jpg" alt="\u76ee\u6a19\u9ad4\u614b"><div class="goal-label">\ud83d\udcaa \u76ee\u6a19\u9ad4\u614b</div><div class="goal-sub">\u6bcf\u5929\u90fd\u66f4\u63a5\u8fd1\u9019\u500b\u76ee\u6a19</div></div>';
+    $('bot').style.display='none';return;
+  }
   if(dd.rest){
     pg.innerHTML='<div class="rest"><span>'+(dd.id===3?'\ud83e\uddd8':'\ud83d\ude34')+'</span><p>'+dd.note+'</p></div>';
     $('bot').style.display='none';return;
