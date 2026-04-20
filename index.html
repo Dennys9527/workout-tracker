@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="訓練">
+<meta name="theme-color" content="#000">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>訓練追蹤</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#000;--c1:#111;--c2:#1a1a1a;--ac:#6c63ff;--gn:#2ecc71;--tx:#eee;--t2:#777;--bd:#222}
+body{font-family:-apple-system,system-ui,'Noto Sans TC',sans-serif;background:var(--bg);color:var(--tx);-webkit-tap-highlight-color:transparent;max-width:480px;margin:0 auto;padding-bottom:70px}
+.tabs{display:flex;gap:2px;padding:14px 12px 10px;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:20;background:var(--bg)}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:.75rem;font-weight:700;border:none;cursor:pointer;background:var(--c1);color:var(--t2);transition:.15s}
+.tab.on{background:var(--ac);color:#fff}
+.hero{padding:4px 12px 12px}
+.hero-title{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.hero-dot{width:14px;height:14px;border-radius:4px;background:var(--ac);flex-shrink:0}
+.hero-title h2{font-size:.95rem;font-weight:700}
+.hero-scroll{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.hero-scroll::-webkit-scrollbar{display:none}
+.hero-card{flex-shrink:0;width:42%;border-radius:12px;overflow:hidden;position:relative;background:var(--c2)}
+.hero-card img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.hero-card .hc-lb{position:absolute;bottom:0;left:0;right:0;padding:6px 8px;background:linear-gradient(transparent,rgba(0,0,0,.75));font-size:.62rem;color:rgba(255,255,255,.85);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-count{position:absolute;bottom:6px;right:8px;font-size:.58rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:3px}
+.rest{text-align:center;padding:80px 20px;color:var(--t2)}
+.rest span{font-size:2.8rem;display:block;margin-bottom:8px}
+.rest p{font-size:.9rem}
+.ex{background:var(--c1);border-radius:14px;margin:0 12px 10px;overflow:hidden}
+.ex-head{display:flex;align-items:center;padding:10px 12px;cursor:pointer;gap:10px}
+.ex-thumb{width:44px;height:44px;border-radius:10px;object-fit:cover;background:var(--c2);flex-shrink:0}
+.ex-info{flex:1;min-width:0}
+.ex-name{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ex-meta{font-size:.65rem;color:var(--t2);margin-top:2px}
+.ex-tag{font-size:.68rem;color:var(--ac);font-weight:700;white-space:nowrap}
+.ex-arr{font-size:.6rem;color:var(--t2);transition:transform .15s}
+.ex.open .ex-arr{transform:rotate(90deg)}
+.ex-body{display:none;padding:0 12px 12px}
+.ex.open .ex-body{display:block}
+.ex-pics{display:flex;gap:6px;margin-bottom:10px}
+.ex-pics .pw{position:relative;flex:1}
+.ex-pics img{width:100%;border-radius:8px;aspect-ratio:3/4;object-fit:cover;background:var(--c2)}
+.ex-pics .pl{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:.55rem;color:rgba(255,255,255,.65);background:rgba(0,0,0,.55);padding:1px 6px;border-radius:4px}
+.sr{display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.sr:last-child{border:none}
+.sn{width:18px;font-size:.65rem;color:var(--t2);text-align:center;font-weight:800}
+.sr-reps{flex:1;font-size:.78rem;color:var(--t2)}
+.sc{width:32px;height:32px;border-radius:8px;border:2px solid var(--bd);background:none;cursor:pointer;font-size:.72rem;color:transparent;display:flex;align-items:center;justify-content:center;transition:.15s;margin-left:auto}
+.sc.on{background:var(--gn);border-color:var(--gn);color:#fff}
+.bot{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--bd);padding:10px 16px;display:flex;align-items:center;gap:10px;z-index:20;max-width:480px;margin:0 auto}
+.bot-bar{flex:1;height:5px;background:var(--c1);border-radius:3px;overflow:hidden}
+.bot-fill{height:100%;background:var(--gn);transition:width .3s;border-radius:3px}
+.bot-pct{font-size:.78rem;font-weight:800;width:36px;text-align:right}
+.bot-done{padding:7px 18px;border:none;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;background:var(--c1);color:var(--t2);transition:.15s}
+.bot-done.on{background:var(--gn);color:#fff}
+#ib{position:fixed;bottom:0;left:0;right:0;background:var(--ac);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:8px;z-index:200;font-size:.82rem;font-weight:600}
+#ib span{flex:1}
+#ib button{padding:6px 14px;border:none;border-radius:6px;font-weight:700;font-size:.78rem;cursor:pointer}
+#ib .inst{background:#fff;color:var(--ac)}
+#ib .dis{background:transparent;color:rgba(255,255,255,.7)}
+</style>
+</head>
+<body>
+<div class="tabs" id="tabs"></div>
+<div id="page"></div>
+<div class="bot" id="bot">
+  <span class="bot-pct" id="bPct">0%</span>
+  <div class="bot-bar"><div class="bot-fill" id="bFill"></div></div>
+  <button class="bot-done" id="bDone">完成</button>
+</div>
+<script>
+const IB='https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+const IM={'db bench press':'Dumbbell_Bench_Press','one-arm db row':'One-Arm_Dumbbell_Row','incline db press':'Incline_Dumbbell_Press','db pullover':'Bent-Arm_Dumbbell_Pullover','db lateral raise':'Side_Lateral_Raise','db hammer curl':'Hammer_Curls','db goblet squat':'Dumbbell_Squat','db bulgarian split squat':'Dumbbell_Rear_Lunge','db romanian deadlift':'Stiff-Legged_Dumbbell_Deadlift','db walking lunge':'Dumbbell_Lunges','standing db calf raise':'Calf_Raise_On_A_Dumbbell','plank leg raise':'Flat_Bench_Lying_Leg_Raise','seated db shoulder press':'Dumbbell_Shoulder_Press','db flye':'Dumbbell_Flyes','db lateral raise\uff08\u9760\u7246\uff09':'Side_Lateral_Raise','db overhead triceps ext.':'Dumbbell_One-Arm_Triceps_Extension','db kickback':'Tricep_Dumbbell_Kickback','chest-supported db row':'Dumbbell_Incline_Row','one-arm db row\uff08\u91cd\uff09':'One-Arm_Dumbbell_Row','db reverse flye':'Dumbbell_Lying_Rear_Lateral_Raise','db incline curl':'Incline_Dumbbell_Curl','db shrug':'Dumbbell_Shrug','db romanian deadlift\uff08\u91cd\uff09':'Stiff-Legged_Dumbbell_Deadlift','db front elevated split squat':'Dumbbell_Rear_Lunge','db hip thrust':'Barbell_Hip_Thrust','db step-up':'Dumbbell_Step_Ups','single-leg calf raise':'Dumbbell_Seated_One-Leg_Calf_Raise','ab wheel / dead bug':'Dead_Bug'};
+function imgUrl(n,i){const f=IM[n.toLowerCase()];return f?IB+f+'/'+i+'.jpg':'';}
+
+const D=[
+  {id:1,lb:'\u4e0a\u80a2',ex:[
+    {n:'DB Bench Press',m:'\u80f8\u00b7\u4e09\u89d2\u00b7\u4e09\u982d',s:4,r:'6-8'},
+    {n:'One-Arm DB Row',m:'\u80cc\u95ca\u00b7\u83f1\u5f62',s:4,r:'8-10'},
+    {n:'Incline DB Press',m:'\u4e0a\u80f8',s:3,r:'10-12'},
+    {n:'DB Pullover',m:'\u80cc\u95ca\u00b7\u524d\u92f8',s:3,r:'12-15'},
+    {n:'DB Lateral Raise',m:'\u4e2d\u4e09\u89d2',s:3,r:'12-15'},
+    {n:'DB Hammer Curl',m:'\u80b1\u4e8c\u982d\u00b7\u80b1\u808c',s:3,r:'10-12'}]},
+  {id:2,lb:'\u4e0b\u80a2',ex:[
+    {n:'DB Goblet Squat',m:'\u80a1\u56db\u982d\u00b7\u81c0',s:4,r:'8-10'},
+    {n:'DB Bulgarian Split Squat',m:'\u80a1\u56db\u982d\u00b7\u81c0\u4e2d',s:3,r:'10/\u908a'},
+    {n:'DB Romanian Deadlift',m:'\u817f\u5f8c\u00b7\u81c0',s:4,r:'10-12'},
+    {n:'DB Walking Lunge',m:'\u80a1\u56db\u982d\u00b7\u81c0',s:3,r:'12/\u908a'},
+    {n:'Standing DB Calf Raise',m:'\u5c0f\u817f',s:4,r:'15-20'},
+    {n:'Plank Leg Raise',m:'\u8179\u76f4\u808c',s:3,r:'12-15'}]},
+  {id:3,lb:'\u4f11\u606f',rest:true,note:'\u4f4e\u5f37\u5ea6\u6709\u6c27 20 min + \u80a9\u95dc\u7bc0\u6d3b\u52d5\u5ea6'},
+  {id:4,lb:'\u63a8',ex:[
+    {n:'Incline DB Press',m:'\u4e0a\u80f8\u00b7\u524d\u4e09\u89d2',s:4,r:'8-10'},
+    {n:'Seated DB Shoulder Press',m:'\u4e09\u89d2\u00b7\u4e09\u982d',s:4,r:'8-10'},
+    {n:'DB Flye',m:'\u80f8\uff08\u4f38\u5c55\uff09',s:3,r:'12-15'},
+    {n:'DB Lateral Raise\uff08\u9760\u7246\uff09',m:'\u4e2d\u4e09\u89d2',s:4,r:'12-15'},
+    {n:'DB Overhead Triceps Ext.',m:'\u4e09\u982d\u9577\u982d',s:3,r:'10-12'},
+    {n:'DB Kickback',m:'\u4e09\u982d\u5167\u5074',s:3,r:'12-15'}]},
+  {id:5,lb:'\u62c9',ex:[
+    {n:'Chest-Supported DB Row',m:'\u4e2d\u80cc\u00b7\u83f1\u5f62',s:4,r:'8-10'},
+    {n:'One-Arm DB Row\uff08\u91cd\uff09',m:'\u80cc\u95ca',s:4,r:'6-8'},
+    {n:'DB Romanian Deadlift',m:'\u817f\u5f8c\u00b7\u4e0b\u80cc',s:3,r:'10-12'},
+    {n:'DB Reverse Flye',m:'\u5f8c\u4e09\u89d2\u00b7\u659c\u65b9',s:4,r:'12-15'},
+    {n:'DB Incline Curl',m:'\u80b1\u4e8c\u982d',s:3,r:'10-12'},
+    {n:'DB Shrug',m:'\u4e0a\u659c\u65b9',s:3,r:'15-20'}]},
+  {id:6,lb:'\u817f',ex:[
+    {n:'DB Romanian Deadlift\uff08\u91cd\uff09',m:'\u817f\u5f8c\u00b7\u81c0',s:4,r:'6-8'},
+    {n:'DB Front Elevated Split Squat',m:'\u80a1\u56db\u982d\u00b7\u81c0',s:4,r:'10/\u908a'},
+    {n:'DB Hip Thrust',m:'\u81c0\u5927\u808c',s:3,r:'12-15'},
+    {n:'DB Step-Up',m:'\u80a1\u56db\u982d\u00b7\u81c0',s:3,r:'10/\u908a'},
+    {n:'Single-Leg Calf Raise',m:'\u5c0f\u817f',s:4,r:'12-15'},
+    {n:'Ab Wheel / Dead Bug',m:'\u6838\u5fc3',s:3,r:'10-12'}]},
+  {id:7,lb:'\u4f11\u606f',rest:true,note:'\u5b8c\u5168\u4f11\u606f\u65e5'}
+];
+
+let day=1,data={};
+const K=(d,e,s)=>`d${d}e${e}s${s}`;
+const DK=d=>`d${d}_done`;
+const $=id=>document.getElementById(id);
+
+function load(){try{const r=JSON.parse(localStorage.getItem('wt4')||'{}');day=r.day||1;data=r.data||{}}catch(_){}}
+function save(){localStorage.setItem('wt4',JSON.stringify({day,data}))}
+
+function pct(d){
+  const dd=D.find(x=>x.id===d);
+  if(!dd||dd.rest)return 0;
+  let t=0,dn=0;
+  dd.ex.forEach((e,ei)=>{for(let s=0;s<e.s;s++){t++;if((data[K(d,ei,s)]||{}).done)dn++}});
+  return t?Math.round(dn/t*100):0;
+}
+
+function render(){
+  const tabs=$('tabs');tabs.innerHTML='';
+  D.forEach(d=>{
+    const b=document.createElement('button');
+    b.className='tab'+(d.id===day?' on':'');
+    b.textContent=d.lb;
+    b.onclick=()=>{day=d.id;save();render()};
+    tabs.appendChild(b);
+  });
+  const pg=$('page');pg.innerHTML='';
+  const dd=D.find(x=>x.id===day);
+  if(!dd)return;
+  if(dd.rest){
+    pg.innerHTML='<div class="rest"><span>'+(dd.id===3?'\ud83e\uddd8':'\ud83d\ude34')+'</span><p>'+dd.note+'</p></div>';
+    $('bot').style.display='none';return;
+  }
+  $('bot').style.display='flex';
+  // Hero banner
+  const hero=document.createElement('div');hero.className='hero';
+  const dayNames={1:'Upper Body',2:'Lower Body',4:'Push',5:'Pull',6:'Legs + Core'};
+  const dayZh={1:'\u4e0a\u80a2',2:'\u4e0b\u80a2',4:'\u63a8',5:'\u62c9',6:'\u817f + \u6838\u5fc3'};
+  let heroH='<div class="hero-title"><div class="hero-dot"></div><h2>Day '+dd.id+' \u2013 '+(dayNames[dd.id]||dd.lb)+'\uff08'+(dayZh[dd.id]||dd.lb)+'\uff09</h2></div>';
+  heroH+='<div class="hero-scroll">';
+  const shown=new Set();
+  dd.ex.forEach(ex=>{
+    const u=imgUrl(ex.n,0);
+    if(!u||shown.has(u))return;
+    shown.add(u);
+    heroH+='<div class="hero-card"><img loading="lazy" src="'+u+'" alt="'+ex.n+'"><div class="hc-lb">'+ex.n.replace(/\(.+\)/,'')+'</div></div>';
+  });
+  heroH+='<div class="hero-count">\ud83d\uddbc '+dd.ex.length+'</div></div>';
+  hero.innerHTML=heroH;
+  pg.appendChild(hero);
+
+  dd.ex.forEach((ex,ei)=>{
+    const card=document.createElement('div');card.className='ex';
+    const thumb=imgUrl(ex.n,0);
+    let sets='';
+    for(let s=0;s<ex.s;s++){
+      const rec=data[K(day,ei,s)]||{done:false};
+      sets+='<div class="sr"><span class="sn">'+(s+1)+'</span><span class="sr-reps">'+ex.r+' \u6b21</span><button class="sc'+(rec.done?' on':'')+'" data-k="'+K(day,ei,s)+'">\u2713</button></div>';
+    }
+    const u0=imgUrl(ex.n,0),u1=imgUrl(ex.n,1);
+    const pics=u0?'<div class="ex-pics"><div class="pw"><img loading="lazy" src="'+u0+'" alt="start"><div class="pl">\u8d77\u59cb</div></div><div class="pw"><img loading="lazy" src="'+u1+'" alt="end"><div class="pl">\u5b8c\u6210</div></div></div>':'';
+    card.innerHTML='<div class="ex-head">'+(thumb?'<img class="ex-thumb" loading="lazy" src="'+thumb+'" alt="'+ex.n+'">':'')+'<div class="ex-info"><div class="ex-name">'+ex.n+'</div><div class="ex-meta">'+ex.m+'</div></div><div class="ex-tag">'+ex.s+'\u00d7'+ex.r+'</div><div class="ex-arr">\u25b6</div></div><div class="ex-body">'+pics+sets+'</div>';
+    card.querySelector('.ex-head').onclick=()=>card.classList.toggle('open');
+    pg.appendChild(card);
+  });
+  pg.querySelectorAll('.sc').forEach(btn=>{
+    btn.onclick=e=>{
+      e.stopPropagation();const kk=btn.dataset.k;
+      if(!data[kk])data[kk]={done:false};
+      data[kk].done=!data[kk].done;btn.classList.toggle('on');save();upBot();
+    };
+  });
+  upBot();
+}
+
+function upBot(){
+  const p=pct(day);
+  $('bPct').textContent=p+'%';
+  $('bFill').style.width=p+'%';
+  const btn=$('bDone'),done=data[DK(day)];
+  btn.className='bot-done'+(done?' on':'');
+  btn.textContent=done?'\u2705 \u5b8c\u6210':'\u5b8c\u6210';
+}
+$('bDone').onclick=()=>{data[DK(day)]=!data[DK(day)];save();render()};
+
+load();render();
+setTimeout(()=>{const on=document.querySelector('.tab.on');if(on)on.scrollIntoView({inline:'center',behavior:'smooth'})},100);
+
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+let dp=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;
+  const b=document.createElement('div');b.id='ib';
+  b.innerHTML='<span>\ud83d\udcf2 \u5b89\u88dd\u5230\u684c\u9762</span><button class="inst" id="instB">\u5b89\u88dd</button><button class="dis" id="disB">\u2715</button>';
+  document.body.appendChild(b);
+  $('instB').onclick=async()=>{if(dp){dp.prompt();await dp.userChoice;dp=null}b.remove()};
+  $('disB').onclick=()=>b.remove();
+});
+</script>
+</body>
+</html>
