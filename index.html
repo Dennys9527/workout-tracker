@@ -28,6 +28,25 @@ body{font-family:-apple-system,system-ui,'Noto Sans TC',sans-serif;background:va
 .hero-card img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
 .hero-card .hc-lb{position:absolute;bottom:0;left:0;right:0;padding:6px 8px;background:linear-gradient(transparent,rgba(0,0,0,.75));font-size:.62rem;color:rgba(255,255,255,.85);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hero-count{position:absolute;bottom:6px;right:8px;font-size:.58rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:3px}
+.cal{padding:12px}
+.cal-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:14px}
+.cal-nav button{background:var(--c1);border:none;color:var(--tx);font-size:1rem;width:36px;height:36px;border-radius:10px;cursor:pointer}
+.cal-nav span{font-size:.88rem;font-weight:700;min-width:120px;text-align:center}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-hd{font-size:.6rem;color:var(--t2);text-align:center;padding:4px 0;font-weight:700}
+.cal-cell{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.7rem;background:var(--c1);position:relative;gap:1px}
+.cal-cell.empty{background:transparent}
+.cal-cell.today{border:2px solid var(--ac)}
+.cal-cell .cal-d{font-weight:700}
+.cal-cell .cal-tag{font-size:.45rem;color:var(--ac);font-weight:700;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-cell.done{background:rgba(46,204,113,.15)}
+.cal-cell.done .cal-d{color:var(--gn)}
+.cal-cell.partial{background:rgba(108,99,255,.1)}
+.cal-cell.partial .cal-d{color:var(--ac)}
+.cal-stats{display:flex;gap:8px;margin-top:14px;justify-content:center;flex-wrap:wrap}
+.cal-stat{background:var(--c1);border-radius:10px;padding:10px 14px;text-align:center;min-width:80px}
+.cal-stat .cs-n{font-size:1.2rem;font-weight:800;color:var(--gn)}
+.cal-stat .cs-l{font-size:.6rem;color:var(--t2);margin-top:2px}
 .goal{padding:12px;text-align:center}
 .goal-img{width:100%;max-width:320px;border-radius:16px;object-fit:cover;margin:0 auto 14px;display:block;box-shadow:0 4px 24px rgba(108,99,255,.25)}
 .goal-label{font-size:.85rem;font-weight:700;color:var(--ac);margin-bottom:4px}
@@ -84,6 +103,7 @@ function imgUrl(n,i){const f=IM[n.toLowerCase()];return f?IB+f+'/'+i+'.jpg':'';}
 
 const D=[
   {id:0,lb:'\ud83c\udfaf',goal:true},
+  {id:8,lb:'\ud83d\udcc5',cal:true},
   {id:1,lb:'\u4e0a\u80a2',ex:[
     {n:'DB Bench Press',m:'\u80f8\u00b7\u4e09\u89d2\u00b7\u4e09\u982d',s:4,r:'6-8'},
     {n:'One-Arm DB Row',m:'\u80cc\u95ca\u00b7\u83f1\u5f62',s:4,r:'8-10'},
@@ -155,6 +175,7 @@ function render(){
     pg.innerHTML='<div class="goal"><img class="goal-img" src="goal.jpg" alt="\u76ee\u6a19\u9ad4\u614b"><div class="goal-label">\ud83d\udcaa \u76ee\u6a19\u9ad4\u614b</div><div class="goal-sub">\u6bcf\u5929\u90fd\u66f4\u63a5\u8fd1\u9019\u500b\u76ee\u6a19</div></div>';
     $('bot').style.display='none';return;
   }
+  if(dd.cal){renderCal();$('bot').style.display='none';return;}
   if(dd.rest){
     pg.innerHTML='<div class="rest"><span>'+(dd.id===3?'\ud83e\uddd8':'\ud83d\ude34')+'</span><p>'+dd.note+'</p></div>';
     $('bot').style.display='none';return;
@@ -209,7 +230,72 @@ function upBot(){
   btn.className='bot-done'+(done?' on':'');
   btn.textContent=done?'\u2705 \u5b8c\u6210':'\u5b8c\u6210';
 }
-$('bDone').onclick=()=>{data[DK(day)]=!data[DK(day)];save();render()};
+$('bDone').onclick=()=>{
+  const wasDone=data[DK(day)];
+  data[DK(day)]=!wasDone;
+  if(!wasDone){
+    const t=new Date(),ds=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+    const dd=D.find(x=>x.id===day);
+    if(!data._cal)data._cal={};
+    data._cal[ds]={d:day,lb:dd?dd.lb:'',p:pct(day)};
+  }
+  save();render();
+};
+
+let calY,calM;
+function initCalDate(){const t=new Date();calY=t.getFullYear();calM=t.getMonth();}
+initCalDate();
+function renderCal(){
+  const pg=$('page');pg.innerHTML='';
+  const cal=data._cal||{};
+  const mn=['1\u6708','2\u6708','3\u6708','4\u6708','5\u6708','6\u6708','7\u6708','8\u6708','9\u6708','10\u6708','11\u6708','12\u6708'];
+  const wd=['\u65e5','\u4e00','\u4e8c','\u4e09','\u56db','\u4e94','\u516d'];
+  const daysIn=new Date(calY,calM+1,0).getDate();
+  const firstDay=new Date(calY,calM,1).getDay();
+  const today=new Date();
+  const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  let h='<div class="cal"><div class="cal-nav">';
+  h+='<button id="calP">&lt;</button>';
+  h+='<span>'+calY+' '+mn[calM]+'</span>';
+  h+='<button id="calN">&gt;</button></div>';
+  h+='<div class="cal-grid">';
+  wd.forEach(w=>{h+='<div class="cal-hd">'+w+'</div>';});
+  for(let i=0;i<firstDay;i++)h+='<div class="cal-cell empty"></div>';
+  let monthDone=0,monthTotal=0;
+  for(let d=1;d<=daysIn;d++){
+    const ds=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const rec=cal[ds];
+    const isToday=ds===todayStr;
+    let cls='cal-cell';
+    if(isToday)cls+=' today';
+    if(rec&&rec.p>=100)cls+=' done';
+    else if(rec)cls+=' partial';
+    monthTotal++;
+    if(rec)monthDone++;
+    h+='<div class="'+cls+'"><span class="cal-d">'+d+'</span>';
+    if(rec)h+='<span class="cal-tag">'+rec.lb+'</span>';
+    h+='</div>';
+  }
+  h+='</div>';
+  const streak=calcStreak(cal,todayStr);
+  h+='<div class="cal-stats">';
+  h+='<div class="cal-stat"><div class="cs-n">'+monthDone+'</div><div class="cs-l">\u672c\u6708\u8a13\u7df4</div></div>';
+  h+='<div class="cal-stat"><div class="cs-n">'+streak+'</div><div class="cs-l">\u9023\u7e8c\u5929\u6578</div></div>';
+  h+='<div class="cal-stat"><div class="cs-n">'+(monthDone>0?Math.round(monthDone/monthTotal*100):0)+'%</div><div class="cs-l">\u51fa\u5e2d\u7387</div></div>';
+  h+='</div></div>';
+  pg.innerHTML=h;
+  $('calP').onclick=()=>{calM--;if(calM<0){calM=11;calY--;}renderCal();};
+  $('calN').onclick=()=>{calM++;if(calM>11){calM=0;calY++;}renderCal();};
+}
+function calcStreak(cal,todayStr){
+  let s=0,d=new Date();
+  while(true){
+    const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if(cal[ds])s++; else if(ds!==todayStr)break; 
+    d.setDate(d.getDate()-1);
+  }
+  return s;
+}
 
 load();render();
 setTimeout(()=>{const on=document.querySelector('.tab.on');if(on)on.scrollIntoView({inline:'center',behavior:'smooth'})},100);
