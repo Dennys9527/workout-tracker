@@ -273,6 +273,36 @@ body{font-family:-apple-system,system-ui,'Noto Sans TC',sans-serif;background:va
 .diet-custom button:active{transform:scale(.92)}
 .diet-empty{text-align:center;padding:24px 0;color:var(--t2);font-size:.82rem}
 .diet-summary{display:flex;gap:10px;margin-top:16px;justify-content:center;flex-wrap:wrap}
+/* === Meal Plan === */
+.mp-toggle{display:flex;gap:8px;margin-bottom:16px;justify-content:center}
+.mp-toggle button{padding:8px 18px;border:1px solid var(--bd);background:var(--c1);color:var(--t2);border-radius:20px;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s}
+.mp-toggle button.on{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#000;border-color:transparent;box-shadow:0 2px 12px rgba(245,158,11,.3)}
+.mp-toggle button:active{transform:scale(.92)}
+.mp-section{margin-bottom:18px}
+.mp-meal{background:var(--c1);border:1px solid var(--bd);border-radius:16px;padding:12px;margin-bottom:10px;animation:fadeUp .3s both}
+.mp-meal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mp-meal-name{font-size:.82rem;font-weight:800}
+.mp-meal-cal{font-size:.68rem;color:var(--t2);font-weight:600}
+.mp-items{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.mp-item{display:flex;justify-content:space-between;align-items:center;font-size:.7rem;padding:5px 8px;background:var(--bg);border-radius:10px}
+.mp-item-name{display:flex;align-items:center;gap:6px}
+.mp-item-icon{font-size:.9rem}
+.mp-item-cal{color:var(--t2);font-size:.62rem;font-weight:600}
+.mp-btn{width:100%;padding:8px;border:1px dashed rgba(245,158,11,.3);background:transparent;color:#fbbf24;border-radius:12px;font-size:.7rem;font-weight:700;cursor:pointer;transition:all .2s}
+.mp-btn:active{transform:scale(.95);background:rgba(245,158,11,.1)}
+.mp-all{text-align:center;margin:14px 0 18px}
+.mp-all-btn{padding:12px 28px;border:none;border-radius:16px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#000;font-size:.82rem;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(245,158,11,.25);transition:all .2s}
+.mp-all-btn:active{transform:scale(.93)}
+.mp-totals{display:flex;gap:6px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
+.mp-tot{background:var(--c1);border:1px solid var(--bd);border-radius:12px;padding:6px 12px;text-align:center;min-width:60px}
+.mp-tot .mv{font-size:.88rem;font-weight:800;background:linear-gradient(135deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mp-tot .ml{color:var(--t2);font-size:.56rem;margin-top:1px}
+.mp-loaded{opacity:.45;pointer-events:none;position:relative}
+.mp-loaded::after{content:'\2713  已加入';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(52,211,153,.9);color:#fff;padding:4px 14px;border-radius:20px;font-size:.7rem;font-weight:700;z-index:1}
+.mp-divider{text-align:center;color:var(--t2);font-size:.68rem;margin:18px 0 12px;position:relative}
+.mp-divider::before,.mp-divider::after{content:'';position:absolute;top:50%;width:30%;height:1px;background:var(--bd)}
+.mp-divider::before{left:0}
+.mp-divider::after{right:0}
 /* === Optimizations === */
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 .tab:focus-visible,.sc:focus-visible,.cal-nav button:focus-visible,.bot-done:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
@@ -742,11 +772,44 @@ const FOODS=[
   {n:'\u725b\u8089',icon:'\ud83e\udd69',cal:250,p:26,c:0,f:15,unit:'100g'},
   {n:'\u767d\u98ef',icon:'\ud83c\udf5a',cal:242,p:4,c:53,f:0,unit:'1\u7897'}
 ];
+
+const MEAL_PLANS={
+  training:{
+    label:'強 訓練日',
+    target:2200,
+    macros:{p:170,c:230,f:60},
+    meals:[
+      {name:'☀ 早餐',items:[6,1,1,4,11]},
+      {name:'☕ 午餐',items:[0,2,9,7]},
+      {name:'➡ 訓練後',items:[11,3]},
+      {name:'✨ 晚餐',items:[8,14,10,9,1]},
+      {name:'○ 點心',items:[12,1]}
+    ]
+  },
+  rest:{
+    label:'休 休息日',
+    target:1800,
+    macros:{p:150,c:190,f:55},
+    meals:[
+      {name:'☀ 早餐',items:[6,1,1,4,5]},
+      {name:'☕ 午餐',items:[0,2,9,10,1]},
+      {name:'✨ 晚餐',items:[8,14,9,1]},
+      {name:'○ 點心',items:[12,7]}
+    ]
+  }
+};
+function getMPType(){return data._mpType||'training';}
+function setMPType(t){data._mpType=t;save();}
+function mealCalc(items){return items.reduce(function(a,fi){var f=FOODS[fi];return{cal:a.cal+f.cal,p:a.p+f.p,c:a.c+f.c,f:a.f+f.f};},{cal:0,p:0,c:0,f:0});}
+function getMealLoaded(ds){if(!data._mpLoaded)data._mpLoaded={};return data._mpLoaded[ds]||{};}
+function setMealLoaded(ds,mi){if(!data._mpLoaded)data._mpLoaded={};if(!data._mpLoaded[ds])data._mpLoaded[ds]={};data._mpLoaded[ds][mi]=true;save();}
+
 const DIET_TARGET_DEFAULT=2000;
-const MACRO_TARGETS={p:150,c:200,f:55};
+const MACRO_TARGETS_BASE={p:150,c:200,f:55};
+function getMacroTargets(){var p=MEAL_PLANS[getMPType()];return p?p.macros:MACRO_TARGETS_BASE;}
 
 function todayStr(){const t=new Date();return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');}
-function getDietTarget(){return data._dietTarget||DIET_TARGET_DEFAULT;}
+function getDietTarget(){var pt=MEAL_PLANS[getMPType()];return data._dietTarget||(pt?pt.target:DIET_TARGET_DEFAULT);}
 function setDietTarget(v){data._dietTarget=Math.max(800,Math.min(5000,v));save();}
 function getDietLog(ds){if(!data._diet)data._diet={};if(!data._diet[ds])data._diet[ds]=[];return data._diet[ds];}
 function addDietEntry(ds,entry){if(!data._diet)data._diet={};if(!data._diet[ds])data._diet[ds]=[];data._diet[ds].push(entry);save();}
@@ -781,7 +844,7 @@ function renderDiet(){
   h+='</div>';
 
   // Macros
-  const mp=MACRO_TARGETS;
+  const mp=getMacroTargets();
   const macros=[
     {label:'\u86cb\u767d\u8cea',val:Math.round(totals.p),max:mp.p,color:'#60a5fa',unit:'g'},
     {label:'\u78b3\u6c34',val:Math.round(totals.c),max:mp.c,color:'#fbbf24',unit:'g'},
@@ -795,6 +858,45 @@ function renderDiet(){
     h+='<div class="dm-label">'+m.label+'</div></div>';
   });
   h+='</div>';
+
+  // Meal Plan section
+  var mpt=getMPType();
+  var plan=MEAL_PLANS[mpt];
+  var planTotal=mealCalc(plan.meals.reduce(function(a,m){return a.concat(m.items);},[]));  
+  var loaded=getMealLoaded(ds);
+
+  h+='<div class="mp-section">';
+  h+='<div class="diet-stitle">▶ 今日飲食計畫</div>';
+  h+='<div class="mp-toggle">';
+  h+='<button id="mpTrain" class="'+(mpt==='training'?'on':'')+'">強 訓練日</button>';
+  h+='<button id="mpRest" class="'+(mpt==='rest'?'on':'')+'">休 休息日</button>';
+  h+='</div>';
+  h+='<div class="mp-totals">';
+  h+='<div class="mp-tot"><div class="mv">'+Math.round(planTotal.cal)+'</div><div class="ml">kcal</div></div>';
+  h+='<div class="mp-tot"><div class="mv">'+Math.round(planTotal.p)+'g</div><div class="ml">蛋白質</div></div>';
+  h+='<div class="mp-tot"><div class="mv">'+Math.round(planTotal.c)+'g</div><div class="ml">碳水</div></div>';
+  h+='<div class="mp-tot"><div class="mv">'+Math.round(planTotal.f)+'g</div><div class="ml">脂肪</div></div>';
+  h+='</div>';
+  plan.meals.forEach(function(meal,mi){
+    var mc=mealCalc(meal.items);
+    var isLoaded=loaded[mi];
+    h+='<div class="mp-meal'+(isLoaded?' mp-loaded':'')+'" style="animation-delay:'+(mi*0.06)+'s">';
+    h+='<div class="mp-meal-head"><span class="mp-meal-name">'+meal.name+'</span>';
+    h+='<span class="mp-meal-cal">'+Math.round(mc.cal)+' kcal \u00b7 P'+Math.round(mc.p)+'g</span></div>';
+    h+='<div class="mp-items">';
+    meal.items.forEach(function(fi){
+      var f=FOODS[fi];
+      h+='<div class="mp-item"><span class="mp-item-name"><span class="mp-item-icon">'+f.icon+'</span>'+f.n+' <span style="color:var(--t2);font-size:.58rem">('+f.unit+')</span></span>';
+      h+='<span class="mp-item-cal">'+f.cal+' kcal</span></div>';
+    });
+    h+='</div>';
+    h+='<button class="mp-btn" data-mi="'+mi+'">+ 加入此餐</button>';
+    h+='</div>';
+  });
+  h+='<div class="mp-all"><button class="mp-all-btn" id="mpLoadAll">↑ 一鍵加載整日飲食</button></div>';
+  h+='</div>';
+
+  h+='<div class="mp-divider">── 手動新增 ──</div>';
 
   // Custom add
   h+='<div class="diet-section"><div class="diet-stitle">\u270f\ufe0f \u81ea\u5b9a\u7fa9\u65b0\u589e</div>';
@@ -886,6 +988,42 @@ function renderDiet(){
       renderDiet();
     };
   });
+
+  // Event: meal plan toggle
+  if($('mpTrain'))$('mpTrain').onclick=function(){setMPType('training');data._dietTarget=0;save();renderDiet();};
+  if($('mpRest'))$('mpRest').onclick=function(){setMPType('rest');data._dietTarget=0;save();renderDiet();};
+
+  // Event: add single meal
+  pg.querySelectorAll('.mp-btn').forEach(function(btn){
+    btn.onclick=function(){
+      var mi=parseInt(btn.dataset.mi);
+      var meal=plan.meals[mi];
+      meal.items.forEach(function(fi){
+        var f=FOODS[fi];
+        addDietEntry(ds,{n:f.n,cal:f.cal,p:f.p,c:f.c,f:f.f});
+      });
+      setMealLoaded(ds,mi);
+      showToast('✅ '+meal.name+' 已加入');
+      if(navigator.vibrate)navigator.vibrate(20);
+      renderDiet();
+    };
+  });
+
+  // Event: load all meals
+  if($('mpLoadAll'))$('mpLoadAll').onclick=function(){
+    plan.meals.forEach(function(meal,mi){
+      if(!loaded[mi]){
+        meal.items.forEach(function(fi){
+          var f=FOODS[fi];
+          addDietEntry(ds,{n:f.n,cal:f.cal,p:f.p,c:f.c,f:f.f});
+        });
+        setMealLoaded(ds,mi);
+      }
+    });
+    showToast('↑ 整日飲食已加載！');
+    if(navigator.vibrate)navigator.vibrate([20,50,20]);
+    renderDiet();
+  };
 }
 
 load();render();
