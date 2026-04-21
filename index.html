@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
@@ -138,13 +138,69 @@ body{font-family:-apple-system,system-ui,'Noto Sans TC',sans-serif;background:va
 #ib .dis{background:transparent;color:rgba(255,255,255,.7)}
 /* Swipe hint */
 .swipe-hint{text-align:center;font-size:.6rem;color:var(--t2);padding:4px 0 8px;animation:fadeIn .5s .3s both}
+/* Diet / Calories */
+.diet{padding:12px;animation:fadeUp .4s both}
+.diet-header{text-align:center;margin-bottom:18px}
+.diet-ring{position:relative;width:130px;height:130px;margin:0 auto 8px}
+.diet-ring svg{transform:rotate(-90deg)}
+.diet-ring circle{fill:none;stroke-width:8}
+.diet-ring .dr-bg{stroke:var(--c1)}
+.diet-ring .dr-fill{stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1)}
+.diet-ring .dr-txt{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.diet-ring .dr-cal{font-size:1.5rem;font-weight:900;background:linear-gradient(135deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.diet-ring .dr-sub{font-size:.58rem;color:var(--t2);margin-top:1px}
+.diet-target-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px}
+.diet-target-btn{width:34px;height:34px;border:1px solid var(--bd);background:var(--c1);color:var(--tx);border-radius:10px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.diet-target-btn:active{transform:scale(.88);background:var(--ac);color:#fff}
+.diet-target-val{font-size:.82rem;font-weight:700;min-width:100px;text-align:center}
+.diet-macros{display:flex;gap:8px;margin-bottom:18px}
+.diet-macro{flex:1;background:var(--c1);border:1px solid var(--bd);border-radius:14px;padding:10px 6px;text-align:center}
+.dm-bar{height:4px;border-radius:2px;background:var(--c2);margin-bottom:6px;overflow:hidden}
+.dm-bar div{height:100%;border-radius:2px;transition:width .4s}
+.dm-val{font-size:.95rem;font-weight:800}
+.dm-label{font-size:.55rem;color:var(--t2);margin-top:2px}
+.diet-section{margin-bottom:16px}
+.diet-stitle{font-size:.72rem;font-weight:700;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.diet-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.diet-preset{background:var(--c1);border:1px solid var(--bd);border-radius:14px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.diet-preset:active{transform:scale(.92);border-color:rgba(245,158,11,.3)}
+.diet-preset .dp-icon{font-size:1.3rem;margin-bottom:3px}
+.diet-preset .dp-name{font-size:.68rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.diet-preset .dp-cal{font-size:.58rem;color:var(--t2)}
+.diet-log{display:flex;flex-direction:column;gap:8px}
+.diet-entry{display:flex;align-items:center;gap:10px;background:var(--c1);border:1px solid var(--bd);border-radius:14px;padding:10px 12px;animation:fadeUp .3s both}
+.de-info{flex:1;min-width:0}
+.de-name{font-size:.78rem;font-weight:700}
+.de-detail{font-size:.58rem;color:var(--t2);margin-top:2px}
+.de-cal{font-size:.82rem;font-weight:800;color:#fbbf24;white-space:nowrap}
+.de-del{width:28px;height:28px;border:none;background:var(--c2);border-radius:8px;color:var(--t2);font-size:.7rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.de-del:active{transform:scale(.82);background:rgba(239,68,68,.2);color:#ef4444}
+.diet-custom{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.diet-custom input{background:var(--c1);border:1px solid var(--bd);border-radius:12px;padding:9px 10px;color:var(--tx);font-size:.78rem;font-family:inherit;width:0}
+.diet-custom input::placeholder{color:var(--t2)}
+.diet-custom input:focus{outline:none;border-color:rgba(245,158,11,.4)}
+.diet-custom .dc-name{flex:2;min-width:80px}
+.diet-custom .dc-num{flex:1;min-width:50px}
+.diet-custom button{padding:9px 14px;border:none;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#000;font-weight:800;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.diet-custom button:active{transform:scale(.92)}
+.diet-empty{text-align:center;padding:24px 0;color:var(--t2);font-size:.82rem}
+.diet-summary{display:flex;gap:10px;margin-top:16px;justify-content:center;flex-wrap:wrap}
+/* === Optimizations === */
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+.tab:focus-visible,.sc:focus-visible,.cal-nav button:focus-visible,.bot-done:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.ex-head:focus-visible{outline:2px solid var(--ac);outline-offset:-2px;border-radius:18px}
+.tabs{-webkit-mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent);mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 12px),transparent)}
+.cal-cell{min-height:44px}
+html{scroll-behavior:smooth}
+.ex.done{border-color:rgba(52,211,153,.15)}
+.ex.done .ex-name{color:var(--gn2)}
 </style>
 </head>
 <body>
 <div class="tabs" id="tabs"></div>
 <div id="page"></div>
 <div id="toast" class="toast"></div>
-<svg width="0" height="0"><defs><linearGradient id="progGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--gn)"/><stop offset="100%" stop-color="var(--gn2)"/></linearGradient></defs></svg>
+<svg width="0" height="0"><defs><linearGradient id="progGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--gn)"/><stop offset="100%" stop-color="var(--gn2)"/></linearGradient><linearGradient id="dietGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient></defs></svg>
 <div class="bot" id="bot">
   <div class="prog-ring" id="bRing">
     <svg width="42" height="42" viewBox="0 0 42 42">
@@ -153,9 +209,10 @@ body{font-family:-apple-system,system-ui,'Noto Sans TC',sans-serif;background:va
     </svg>
     <span class="ring-txt" id="bPct">0%</span>
   </div>
-  <button class="bot-done" id="bDone">完成</button>
+  <button class="bot-done" id="bDone" aria-label="標記今日訓練完成">完成</button>
 </div>
 <script>
+document.addEventListener('error',function(e){if(e.target.tagName==='IMG'){e.target.style.display='none';var p=e.target.closest('.hero-card');if(p)p.style.display='none';}},true);
 const IB='https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 const IM={'db bench press':'Dumbbell_Bench_Press','one-arm db row':'One-Arm_Dumbbell_Row','incline db press':'Incline_Dumbbell_Press','db pullover':'Bent-Arm_Dumbbell_Pullover','db lateral raise':'Side_Lateral_Raise','db hammer curl':'Hammer_Curls','db goblet squat':'Dumbbell_Squat','db bulgarian split squat':'Dumbbell_Rear_Lunge','db romanian deadlift':'Stiff-Legged_Dumbbell_Deadlift','db walking lunge':'Dumbbell_Lunges','standing db calf raise':'Calf_Raise_On_A_Dumbbell','plank leg raise':'Flat_Bench_Lying_Leg_Raise','seated db shoulder press':'Dumbbell_Shoulder_Press','db flye':'Dumbbell_Flyes','db lateral raise\uff08\u9760\u7246\uff09':'Side_Lateral_Raise','db overhead triceps ext.':'Dumbbell_One-Arm_Triceps_Extension','db kickback':'Tricep_Dumbbell_Kickback','chest-supported db row':'Dumbbell_Incline_Row','one-arm db row\uff08\u91cd\uff09':'One-Arm_Dumbbell_Row','db reverse flye':'Dumbbell_Lying_Rear_Lateral_Raise','db incline curl':'Incline_Dumbbell_Curl','db shrug':'Dumbbell_Shrug','db romanian deadlift\uff08\u91cd\uff09':'Stiff-Legged_Dumbbell_Deadlift','db front elevated split squat':'Dumbbell_Rear_Lunge','db hip thrust':'Barbell_Hip_Thrust','db step-up':'Dumbbell_Step_Ups','single-leg calf raise':'Dumbbell_Seated_One-Leg_Calf_Raise','ab wheel / dead bug':'Dead_Bug'};
 function imgUrl(n,i){const f=IM[n.toLowerCase()];return f?IB+f+'/'+i+'.jpg':'';}
@@ -163,6 +220,7 @@ function imgUrl(n,i){const f=IM[n.toLowerCase()];return f?IB+f+'/'+i+'.jpg':'';}
 const D=[
   {id:0,lb:'\ud83c\udfaf',goal:true},
   {id:8,lb:'\ud83d\udcc5',cal:true},
+  {id:9,lb:'\ud83c\udf7d\ufe0f',diet:true},
   {id:1,lb:'\u4e0a\u80a2',ex:[
     {n:'DB Bench Press',m:'\u80f8\u00b7\u4e09\u89d2\u00b7\u4e09\u982d',s:4,r:'6-8'},
     {n:'One-Arm DB Row',m:'\u80cc\u95ca\u00b7\u83f1\u5f62',s:4,r:'8-10'},
@@ -248,15 +306,15 @@ function exPct(dayId,ei,ex){
 }
 
 function render(){
-  const tabs=$('tabs');tabs.innerHTML='';
+  const tabs=$('tabs');tabs.innerHTML='';tabs.setAttribute('role','tablist');
   D.forEach(d=>{
     const b=document.createElement('button');
-    b.className='tab'+(d.id===day?' on':'');
+    b.className='tab'+(d.id===day?' on':'');b.setAttribute('role','tab');b.setAttribute('aria-selected',String(d.id===day));
     b.textContent=d.lb;
     b.onclick=()=>{day=d.id;save();render()};
     tabs.appendChild(b);
   });
-  const pg=$('page');pg.innerHTML='';pg.className='page-transition';
+  const pg=$('page');pg.innerHTML='';pg.className='page-transition';window.scrollTo({top:0});
   const dd=D.find(x=>x.id===day);
   if(!dd)return;
   if(dd.goal){
@@ -264,6 +322,7 @@ function render(){
     $('bot').style.display='none';return;
   }
   if(dd.cal){renderCal();$('bot').style.display='none';return;}
+  if(dd.diet){renderDiet();$('bot').style.display='none';return;}
   if(dd.rest){
     pg.innerHTML='<div class="rest"><span>'+(dd.id===3?'\ud83e\uddd8':'\ud83d\ude34')+'</span><p>'+dd.note+'</p></div>';
     $('bot').style.display='none';return;
@@ -291,7 +350,7 @@ function render(){
     card.style.animationDelay=(ei*0.06)+'s';
     const thumb=imgUrl(ex.n,0);
     const ep=exPct(day,ei,ex);
-    const progCls=ep>=100?'full':ep>0?'partial':'none';
+    const progCls=ep>=100?'full':ep>0?'partial':'none';if(ep>=100)card.classList.add('done');
     const progTxt=ep>=100?'\u2713':ep>0?ep+'%':'';
     let sets='';
     for(let s=0;s<ex.s;s++){
@@ -301,7 +360,7 @@ function render(){
     const u0=imgUrl(ex.n,0),u1=imgUrl(ex.n,1);
     const pics=u0?'<div class="ex-pics"><div class="pw"><img loading="lazy" src="'+u0+'" alt="start"><div class="pl">\u8d77\u59cb</div></div><div class="pw"><img loading="lazy" src="'+u1+'" alt="end"><div class="pl">\u5b8c\u6210</div></div></div>':'';
     card.innerHTML='<div class="ex-head">'+(thumb?'<img class="ex-thumb" loading="lazy" src="'+thumb+'" alt="'+ex.n+'">':'')+'<div class="ex-info"><div class="ex-name">'+ex.n+'</div><div class="ex-meta">'+ex.m+'</div></div><div class="ex-prog '+progCls+'">'+progTxt+'</div><div class="ex-tag">'+ex.s+'\u00d7'+ex.r+'</div><div class="ex-arr">\u25b6</div></div><div class="ex-body">'+pics+sets+'</div>';
-    card.querySelector('.ex-head').onclick=(e)=>{addRipple(card.querySelector('.ex-head'),e);card.classList.toggle('open');};
+    card.querySelector('.ex-head').setAttribute('role','button');card.querySelector('.ex-head').setAttribute('tabindex','0');card.querySelector('.ex-head').setAttribute('aria-expanded','false');card.querySelector('.ex-head').onclick=(e)=>{addRipple(card.querySelector('.ex-head'),e);card.classList.toggle('open');card.querySelector('.ex-head').setAttribute('aria-expanded',String(card.classList.contains('open')));};
     pg.appendChild(card);
   });
   pg.querySelectorAll('.sc').forEach(btn=>{
@@ -313,7 +372,7 @@ function render(){
       // Update exercise progress badge
       const ex=dd.ex[ei];const ep=exPct(day,ei,ex);
       const badge=pg.querySelectorAll('.ex')[ei].querySelector('.ex-prog');
-      if(badge){badge.className='ex-prog '+(ep>=100?'full':ep>0?'partial':'none');badge.textContent=ep>=100?'\u2713':ep>0?ep+'%':'';}
+      if(badge){badge.className='ex-prog '+(ep>=100?'full':ep>0?'partial':'none');badge.textContent=ep>=100?'\u2713':ep>0?ep+'%':'';pg.querySelectorAll('.ex')[ei].classList.toggle('done',ep>=100);}
       if(ep>=100)showToast('\ud83d\udcaa '+ex.n+' \u5b8c\u6210\uff01');
       if(navigator.vibrate)navigator.vibrate(30);
     };
@@ -368,9 +427,9 @@ function renderCal(){
   const today=new Date();
   const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
   let h='<div class="cal"><div class="cal-nav">';
-  h+='<button id="calP">&lt;</button>';
+  h+='<button id="calP" aria-label="上個月">&lt;</button>';
   h+='<span>'+calY+' '+mn[calM]+'</span>';
-  h+='<button id="calN">&gt;</button></div>';
+  h+='<button id="calN" aria-label="下個月">&gt;</button></div>';
   h+='<div class="cal-grid">';
   wd.forEach(w=>{h+='<div class="cal-hd">'+w+'</div>';});
   for(let i=0;i<firstDay;i++)h+='<div class="cal-cell empty"></div>';
@@ -408,6 +467,171 @@ function calcStreak(cal,todayStr){
     d.setDate(d.getDate()-1);
   }
   return s;
+}
+
+
+// === Diet / Calorie Tracking ===
+const FOODS=[
+  {n:'\u96de\u80f8\u8089',icon:'\ud83c\udf57',cal:165,p:31,c:0,f:3.6,unit:'100g'},
+  {n:'\u6c34\u716e\u86cb',icon:'\ud83e\udd5a',cal:78,p:6,c:1,f:5,unit:'1\u984e'},
+  {n:'\u7cf3\u7c73\u98ef',icon:'\ud83c\udf5a',cal:218,p:5,c:45,f:2,unit:'1\u7897'},
+  {n:'\u5730\u74dc',icon:'\ud83c\udf60',cal:115,p:2,c:27,f:0,unit:'1\u689d'},
+  {n:'\u9999\u8549',icon:'\ud83c\udf4c',cal:89,p:1,c:23,f:0,unit:'1\u6839'},
+  {n:'\u8c46\u6f3f',icon:'\ud83e\udd5b',cal:54,p:4,c:4,f:2,unit:'240ml'},
+  {n:'\u71d5\u9ea5',icon:'\ud83e\udd63',cal:150,p:5,c:27,f:3,unit:'40g'},
+  {n:'\u916a\u68a8',icon:'\ud83e\udd51',cal:160,p:2,c:9,f:15,unit:'\u534a\u984e'},
+  {n:'\u9bad\u9b5a',icon:'\ud83e\udd69',cal:208,p:20,c:0,f:13,unit:'100g'},
+  {n:'\u82b1\u6930\u83dc',icon:'\ud83e\udd66',cal:34,p:3,c:7,f:0,unit:'100g'},
+  {n:'\u8c46\u8150',icon:'\ud83e\uddc8',cal:76,p:8,c:2,f:5,unit:'1\u584a'},
+  {n:'\u4e73\u6e05\u86cb\u767d',icon:'\ud83e\udd4a',cal:120,p:24,c:3,f:1,unit:'1\u4efd'},
+  {n:'\u5e0c\u81d8\u512a\u683c',icon:'\ud83e\uded9',cal:100,p:17,c:6,f:1,unit:'1\u676f'},
+  {n:'\u725b\u8089',icon:'\ud83e\udd69',cal:250,p:26,c:0,f:15,unit:'100g'},
+  {n:'\u767d\u98ef',icon:'\ud83c\udf5a',cal:242,p:4,c:53,f:0,unit:'1\u7897'}
+];
+const DIET_TARGET_DEFAULT=2000;
+const MACRO_TARGETS={p:150,c:200,f:55};
+
+function todayStr(){const t=new Date();return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');}
+function getDietTarget(){return data._dietTarget||DIET_TARGET_DEFAULT;}
+function setDietTarget(v){data._dietTarget=Math.max(800,Math.min(5000,v));save();}
+function getDietLog(ds){if(!data._diet)data._diet={};if(!data._diet[ds])data._diet[ds]=[];return data._diet[ds];}
+function addDietEntry(ds,entry){if(!data._diet)data._diet={};if(!data._diet[ds])data._diet[ds]=[];data._diet[ds].push(entry);save();}
+function removeDietEntry(ds,idx){if(data._diet&&data._diet[ds]){data._diet[ds].splice(idx,1);save();}}
+function dietTotals(ds){const log=getDietLog(ds);return log.reduce((a,e)=>({cal:a.cal+e.cal,p:a.p+(e.p||0),c:a.c+(e.c||0),f:a.f+(e.f||0)}),{cal:0,p:0,c:0,f:0});}
+
+function renderDiet(){
+  const pg=$('page');pg.innerHTML='';
+  const ds=todayStr();
+  const log=getDietLog(ds);
+  const totals=dietTotals(ds);
+  const target=getDietTarget();
+  const pctCal=Math.min(Math.round(totals.cal/target*100),100);
+  const remain=Math.max(target-totals.cal,0);
+  // Ring circumference: r=54 → 2*pi*54 ≈ 339.3
+  const circ=339.3;
+  const offset=circ-(circ*pctCal/100);
+
+  let h='<div class="diet">';
+  // Header ring
+  h+='<div class="diet-header">';
+  h+='<div class="diet-ring"><svg width="130" height="130" viewBox="0 0 130 130">';
+  h+='<circle class="dr-bg" cx="65" cy="65" r="54"/>';
+  h+='<circle class="dr-fill" cx="65" cy="65" r="54" stroke="url(#dietGrad)" stroke-dasharray="'+circ+'" stroke-dashoffset="'+offset+'"/>';
+  h+='</svg><div class="dr-txt"><div class="dr-cal">'+totals.cal+'</div><div class="dr-sub">\u5269\u9918 '+remain+' kcal</div></div></div>';
+  // Target adjust
+  h+='<div class="diet-target-row">';
+  h+='<button class="diet-target-btn" id="dtMinus">\u2212</button>';
+  h+='<div class="diet-target-val">\ud83c\udfaf '+target+' kcal</div>';
+  h+='<button class="diet-target-btn" id="dtPlus">+</button>';
+  h+='</div>';
+  h+='</div>';
+
+  // Macros
+  const mp=MACRO_TARGETS;
+  const macros=[
+    {label:'\u86cb\u767d\u8cea',val:Math.round(totals.p),max:mp.p,color:'#60a5fa',unit:'g'},
+    {label:'\u78b3\u6c34',val:Math.round(totals.c),max:mp.c,color:'#fbbf24',unit:'g'},
+    {label:'\u8102\u80aa',val:Math.round(totals.f),max:mp.f,color:'#f472b6',unit:'g'}
+  ];
+  h+='<div class="diet-macros">';
+  macros.forEach(m=>{
+    const w=Math.min(Math.round(m.val/m.max*100),100);
+    h+='<div class="diet-macro"><div class="dm-bar"><div style="width:'+w+'%;background:'+m.color+'"></div></div>';
+    h+='<div class="dm-val" style="color:'+m.color+'">'+m.val+'<span style="font-size:.6rem;font-weight:400;color:var(--t2)">/'+m.max+m.unit+'</span></div>';
+    h+='<div class="dm-label">'+m.label+'</div></div>';
+  });
+  h+='</div>';
+
+  // Custom add
+  h+='<div class="diet-section"><div class="diet-stitle">\u270f\ufe0f \u81ea\u5b9a\u7fa9\u65b0\u589e</div>';
+  h+='<div class="diet-custom">';
+  h+='<input class="dc-name" id="dcN" type="text" placeholder="\u98df\u7269\u540d\u7a31" maxlength="20">';
+  h+='<input class="dc-num" id="dcCal" type="number" placeholder="kcal" min="0" max="9999" inputmode="numeric">';
+  h+='<input class="dc-num" id="dcP" type="number" placeholder="P(g)" min="0" max="999" inputmode="decimal">';
+  h+='<input class="dc-num" id="dcC" type="number" placeholder="C(g)" min="0" max="999" inputmode="decimal">';
+  h+='<input class="dc-num" id="dcF" type="number" placeholder="F(g)" min="0" max="999" inputmode="decimal">';
+  h+='<button id="dcAdd">\u52a0\u5165</button>';
+  h+='</div></div>';
+
+  // Quick add presets
+  h+='<div class="diet-section"><div class="diet-stitle">\u26a1 \u5feb\u901f\u65b0\u589e</div>';
+  h+='<div class="diet-presets">';
+  FOODS.forEach((f,i)=>{
+    h+='<div class="diet-preset" data-fi="'+i+'">';
+    h+='<div class="dp-icon">'+f.icon+'</div>';
+    h+='<div class="dp-name">'+f.n+'</div>';
+    h+='<div class="dp-cal">'+f.cal+' kcal \u00b7 '+f.unit+'</div>';
+    h+='</div>';
+  });
+  h+='</div></div>';
+
+  // Today log
+  h+='<div class="diet-section"><div class="diet-stitle">\ud83d\udcdd \u4eca\u65e5\u8a18\u9304 ('+log.length+'\u7b46)</div>';
+  if(log.length===0){
+    h+='<div class="diet-empty">\ud83c\udf3f \u9084\u6c92\u6709\u8a18\u9304\uff0c\u958b\u59cb\u65b0\u589e\u5427</div>';
+  }else{
+    h+='<div class="diet-log">';
+    log.forEach((e,i)=>{
+      h+='<div class="diet-entry" style="animation-delay:'+(i*0.04)+'s">';
+      h+='<div class="de-info"><div class="de-name">'+e.n+'</div>';
+      h+='<div class="de-detail">P:'+Math.round(e.p||0)+'g \u00b7 C:'+Math.round(e.c||0)+'g \u00b7 F:'+Math.round(e.f||0)+'g</div></div>';
+      h+='<div class="de-cal">'+e.cal+'</div>';
+      h+='<button class="de-del" data-di="'+i+'">\u2715</button>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+  h+='</div>';
+
+  // Daily summary stats
+  if(log.length>0){
+    h+='<div class="diet-summary">';
+    h+='<div class="cal-stat"><div class="cs-n" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">'+pctCal+'%</div><div class="cs-l">\u76ee\u6a19\u9054\u6210</div></div>';
+    h+='<div class="cal-stat"><div class="cs-n" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">'+log.length+'</div><div class="cs-l">\u98df\u7269\u7b46\u6578</div></div>';
+    h+='<div class="cal-stat"><div class="cs-n" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">'+Math.round(totals.p*4+totals.c*4+totals.f*9)+'</div><div class="cs-l">\u5be6\u969b kcal</div></div>';
+    h+='</div>';
+  }
+
+  h+='</div>';
+  pg.innerHTML=h;
+
+  // Event: target adjust
+  $('dtMinus').onclick=()=>{setDietTarget(getDietTarget()-100);renderDiet();};
+  $('dtPlus').onclick=()=>{setDietTarget(getDietTarget()+100);renderDiet();};
+
+  // Event: preset click
+  pg.querySelectorAll('.diet-preset').forEach(el=>{
+    el.onclick=()=>{
+      const f=FOODS[parseInt(el.dataset.fi)];
+      addDietEntry(ds,{n:f.n,cal:f.cal,p:f.p,c:f.c,f:f.f});
+      showToast('\u2705 '+f.n+' +'+f.cal+' kcal');
+      if(navigator.vibrate)navigator.vibrate(20);
+      renderDiet();
+    };
+  });
+
+  // Event: custom add
+  $('dcAdd').onclick=()=>{
+    const name=($('dcN').value||'').trim();
+    const cal=parseInt($('dcCal').value)||0;
+    if(!name||cal<=0){showToast('\u26a0\ufe0f \u8acb\u8f38\u5165\u540d\u7a31\u548c\u71b1\u91cf');return;}
+    const p=parseFloat($('dcP').value)||0;
+    const c=parseFloat($('dcC').value)||0;
+    const f=parseFloat($('dcF').value)||0;
+    addDietEntry(ds,{n:name,cal:cal,p:p,c:c,f:f});
+    showToast('\u2705 '+name+' +'+cal+' kcal');
+    if(navigator.vibrate)navigator.vibrate(20);
+    renderDiet();
+  };
+
+  // Event: delete entry
+  pg.querySelectorAll('.de-del').forEach(btn=>{
+    btn.onclick=()=>{
+      removeDietEntry(ds,parseInt(btn.dataset.di));
+      if(navigator.vibrate)navigator.vibrate(15);
+      renderDiet();
+    };
+  });
 }
 
 load();render();
